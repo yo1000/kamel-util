@@ -8,7 +8,7 @@ Apache Camel utilities for Kotlin.
 <dependency>
     <groupId>com.yo1000</groupId>
     <artifactId>kamel-util</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 
