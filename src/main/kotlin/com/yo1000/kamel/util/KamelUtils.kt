@@ -39,7 +39,8 @@ fun <T : Any> Message.getHeaderFirst(jclass: Class<T>): T? {
 }
 
 fun <T : Any> Message.setHeader(value: T) {
-    setHeader("${value::class.qualifiedName}:${UUID.randomUUID()}", value)
+    // Refs to separator-value: https://datatracker.ietf.org/doc/html/rfc7230#section-3.2.6
+    setHeader("${UUID.randomUUID()}|${value::class.qualifiedName}", value)
 }
 
 fun <T : Any> Message.getBody(kclass: KClass<T>): T? {
