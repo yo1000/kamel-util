@@ -1,9 +1,11 @@
 package com.yo1000.kamel.util
 
 import org.apache.camel.Exchange
+import org.apache.camel.Expression
 import org.apache.camel.Message
 import org.apache.camel.model.ChoiceDefinition
 import org.apache.camel.model.ProcessorDefinition
+import org.apache.camel.model.SplitDefinition
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import java.util.*
@@ -63,6 +65,27 @@ fun ProcessorDefinition<*>.choice(definition: (ChoiceDefinition) -> Unit): Proce
 
 fun ChoiceDefinition.whenOn(condition: (Exchange) -> Boolean): ChoiceDefinition {
     return `when` { condition(it) }
+}
+
+fun ProcessorDefinition<*>.split(
+    expression: Expression,
+    definition: (SplitDefinition) -> Unit,
+    aggregation: (prevExchange: Exchange?, currentExchange: Exchange) -> Exchange
+): ProcessorDefinition<*> {
+    return split(expression) { oldExchange, newExchange ->
+        aggregation(oldExchange, newExchange)
+    }.also {
+        definition(it)
+    }.end()
+}
+
+fun ProcessorDefinition<*>.split(
+    expression: Expression,
+    definition: (SplitDefinition) -> Unit
+): ProcessorDefinition<*> {
+    return split(expression).also {
+        definition(it)
+    }.end()
 }
 
 abstract class TypeRef<T> {
