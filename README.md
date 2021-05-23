@@ -8,18 +8,23 @@ Apache Camel utilities for Kotlin.
 <dependency>
     <groupId>com.yo1000</groupId>
     <artifactId>kamel-util</artifactId>
-    <version>1.0.1</version>
+    <version>1.1.0</version>
 </dependency>
 ```
 
 ## Examples
+
 Details refer to `src/test/kotlin/com/yo1000/kamel/util/KamelUtilsTests.kt`
 
 ### for Kotlin
 
-#### choice 
+#### choice
+
 ```kotlin
-from("direct://example")
+from("direct://choiceExample")
+    .process {
+        it.message.body = 2
+    }
     .choice {
         it.whenOn { it.message.body == 1 }
             .process { it.message.body = "A" }
@@ -30,9 +35,43 @@ from("direct://example")
         it.otherwise()
             .process { it.message.body = "Z" }
     }
+    .process {
+        println(it.message.body) // B
+    }
+```
+
+#### split, aggregate
+
+```kotlin
+from("direct://splitExample")
+    .process {
+        it.message.body = (1..3)
+    }
+    .split(body(), {
+        it.process {
+            it.message.body = it.message.getBody(Int::class)?.let { it + 1 }
+        }
+
+        it.process {
+            it.message.body = it.message.getBody(Int::class)?.let { it * 10 }
+        }
+    }, { prevExchange, currentExchange ->
+        if (prevExchange == null) {
+            currentExchange
+        } else {
+            val prev = prevExchange.message.getBody(Int::class)!!
+            val curr = currentExchange.message.getBody(Int::class)!!
+            prevExchange.message.body = prev + curr
+            prevExchange
+        }
+    })
+    .process {
+        println(it.message.body) // 90
+    }
 ```
 
 #### getBody
+
 ```kotlin
 val stringExchange = DefaultExchange(context).also {
     it.message.body = "Hello, world!"
@@ -48,6 +87,7 @@ listExchange.message.getBody(object : TypeRef<List<Int>>() {}).let {
 ```
 
 #### getHeaderFirst, getHeaders
+
 ```kotlin
 val stringExchange = DefaultExchange(context).also {
     it.message.setHeader("Hello, world!")
