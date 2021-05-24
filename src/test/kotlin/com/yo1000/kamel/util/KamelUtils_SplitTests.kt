@@ -79,7 +79,7 @@ class KamelUtils_SplitTests {
                 .process {
                     it.message.body = (1..3)
                 }
-                .split(body(), {
+                .splitTo(body(), {
                     it.process {
                         it.message.body = it.message.getBody(Int::class)?.let { it + 1 }
                     }
@@ -131,7 +131,7 @@ class KamelUtils_SplitTests {
     ) : RouteBuilder() {
         override fun configure() {
             from("direct://${SplitTestRouteBuilder::class.simpleName}")
-                .split(body(), definition = {
+                .splitTo(body()) {
                     it.process {
                         it.message.body = it.message.getBody(Int::class)?.let { it * 10 }
                     }
@@ -143,7 +143,7 @@ class KamelUtils_SplitTests {
                     it.process {
                         mutList += it.message.body as String
                     }
-                })
+                }
         }
     }
 }

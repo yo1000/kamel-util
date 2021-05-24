@@ -25,7 +25,7 @@ from("direct://choiceExample")
     .process {
         it.message.body = 2
     }
-    .choice {
+    .choiceFrom {
         it.whenOn { it.message.body == 1 }
             .process { it.message.body = "A" }
 
@@ -47,7 +47,7 @@ from("direct://splitExample")
     .process {
         it.message.body = (1..3)
     }
-    .split(body(), {
+    .splitTo(body(), {
         it.process {
             it.message.body = it.message.getBody(Int::class)?.let { it + 1 }
         }

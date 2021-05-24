@@ -47,7 +47,7 @@ class KamelUtils_ChoiceTests {
     class ChoiceTestRouteBuilder : RouteBuilder() {
         override fun configure() {
             from("direct://${ChoiceTestRouteBuilder::class.simpleName}")
-                .choice {
+                .choiceFrom {
                     it.whenOn { it.message.body == 1 }
                         .process { it.message.body = "A" }
 

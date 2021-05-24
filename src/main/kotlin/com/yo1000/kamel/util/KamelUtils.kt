@@ -9,6 +9,7 @@ import org.apache.camel.model.SplitDefinition
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import java.util.*
+import kotlin.math.exp
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubclassOf
 
@@ -63,6 +64,10 @@ fun ProcessorDefinition<*>.choice(definition: (ChoiceDefinition) -> Unit): Proce
     }.endChoice()
 }
 
+fun ProcessorDefinition<*>.choiceFrom(definition: (ChoiceDefinition) -> Unit): ProcessorDefinition<*> {
+    return choice(definition)
+}
+
 fun ChoiceDefinition.whenOn(condition: (Exchange) -> Boolean): ChoiceDefinition {
     return `when` { condition(it) }
 }
@@ -86,6 +91,21 @@ fun ProcessorDefinition<*>.split(
     return split(expression).also {
         definition(it)
     }.end()
+}
+
+fun ProcessorDefinition<*>.splitTo(
+    expression: Expression,
+    definition: (SplitDefinition) -> Unit,
+    aggregation: (accExchange: Exchange?, exchange: Exchange) -> Exchange
+): ProcessorDefinition<*> {
+    return split(expression, definition, aggregation)
+}
+
+fun ProcessorDefinition<*>.splitTo(
+    expression: Expression,
+    definition: (SplitDefinition) -> Unit
+): ProcessorDefinition<*> {
+    return split(expression, definition = definition)
 }
 
 abstract class TypeRef<T> {
