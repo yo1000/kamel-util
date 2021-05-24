@@ -55,14 +55,14 @@ from("direct://splitExample")
         it.process {
             it.message.body = it.message.getBody(Int::class)?.let { it * 10 }
         }
-    }, { prevExchange, currentExchange ->
-        if (prevExchange == null) {
-            currentExchange
+    }, { accExchange, exchange ->
+        if (accExchange == null) {
+            exchange
         } else {
-            val prev = prevExchange.message.getBody(Int::class)!!
-            val curr = currentExchange.message.getBody(Int::class)!!
-            prevExchange.message.body = prev + curr
-            prevExchange
+            val acc = accExchange.message.getBody(Int::class)!!
+            val value = exchange.message.getBody(Int::class)!!
+            accExchange.message.body = acc + value
+            accExchange
         }
     })
     .process {

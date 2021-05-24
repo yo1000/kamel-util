@@ -75,10 +75,10 @@ fun ChoiceDefinition.whenOn(condition: (Exchange) -> Boolean): ChoiceDefinition 
 fun ProcessorDefinition<*>.split(
     expression: Expression,
     definition: (SplitDefinition) -> Unit,
-    aggregation: (prevExchange: Exchange?, currentExchange: Exchange) -> Exchange
+    aggregation: (accExchange: Exchange?, exchange: Exchange) -> Exchange
 ): ProcessorDefinition<*> {
-    return split(expression) { oldExchange, newExchange ->
-        aggregation(oldExchange, newExchange)
+    return split(expression) { accExchange, exchange ->
+        aggregation(accExchange, exchange)
     }.also {
         definition(it)
     }.end()
